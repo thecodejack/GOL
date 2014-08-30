@@ -7,15 +7,19 @@
 <body style="background-color:#222;padding:0 10px;">
     <div class="content">
         <div>
-            <div class="ui inverted form">
+            <div class="ui inverted form" id="GOL_GRID_FORM">
+                <div class="ui error message">
+                    <div class="header">Action Forbidden</div>
+                    <p>Set Value is not a Number</p>
+                </div>
                 <div class="five fields">
                     <div class="field">
                         <label>Grid Size</label>
-                        <input placeholder="Grid Size" type="text">
+                        <input placeholder="Grid Size" type="text" id="GOL_GRID_TXT" maxlength=2>
                     </div>
                     <div class="field">
                         <div class="ui segment inverted">
-                        <div class="ui small blue submit button">Submit</div></div>
+                        <div class="ui small blue submit button" id="GOL_GRID_BUT">Set</div></div>
                     </div>
                 </div>
             </div>

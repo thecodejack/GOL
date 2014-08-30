@@ -1,13 +1,14 @@
 (function(){
     window.GOL = window.GOL || {};
-    var x = 25, y = 25, //Grid Size
+    var x = 10, y = 10, //Grid Size
         gen = 0, bkGroundColor = '#1f2628',
         aliveColor = '#7CFC00';
     var canvas = document.getElementById('GOL_CANVAS')
         context = canvas.getContext('2d'),
         genLbl = document.getElementById('genNum'),
         GOL.isPlaying = false, 
-        startGrid = null;
+        startGrid = null,
+        breakTime = 0;
     function createGrid( rows, cols, isRandom){
         var arr = [];
         for(var i=0; i < rows; i++){
@@ -51,7 +52,17 @@
     
     function isAlive(current, j, k){
         var neighborCount = getNeighborCount(current, j, k);
-		return current[j][k] && neighborCount == 2 || neighborCount == 3;
+		return (current[j][k] && neighborCount == 2) || neighborCount == 3;
+	}
+	
+	function isAllDead(current) {
+	    var clone = [];
+	    for(var x in current) {
+            if(current[x] instanceof Array) {
+                clone[x] = current[x].join("||");
+            }
+        }
+        return !eval(clone.join("||"));
 	}
 	
 	function render(current) {
@@ -80,7 +91,7 @@
                     context.fillStyle = aliveColor;
                     context.fill();
                 }
-                context.lineWidth = 3;
+                context.lineWidth = 1;
                 context.strokeStyle = '#0E0E0E';
                 context.stroke();
 			}
@@ -103,20 +114,46 @@
         render(startGrid);
     };
     GOL.auto = function(Grid){
-        startGrid = Grid || startGrid;
-        startGrid = GOL.run(startGrid);
-        render(startGrid);
-        gen++;
-        genLbl.innerHTML = gen;
-        setTimeout(function(){
-            if(GOL.isPlaying) {
-                GOL.auto(startGrid);
-            }
-        }.bind(this), 1000);
+        if(GOL.isPlaying) {
+            startGrid = Grid || startGrid;
+            startGrid = GOL.run(startGrid);
+            render(startGrid);
+            gen++;
+            genLbl.innerHTML = gen;
+            setTimeout(function(){
+                if(isAllDead(startGrid)) {
+                    GOL.isPlaying = false;
+                }
+            }.bind(this), 1000);
+            setTimeout(function(){
+                    GOL.auto(startGrid);
+            }.bind(this), 1000);
+        }
     };
-    
+    GOL.setGrid = function(size) {
+        GOL.isPlaying = false;
+        x = size, y = size;
+        GOL.init();
+    }
     GOL.init();
 })();
+
+var gridBut = document.getElementById('GOL_GRID_BUT');
+gridBut.addEventListener('click', function(){
+    var gridTxt = document.getElementById('GOL_GRID_TXT'),
+        gridNum = gridTxt.value,
+        gridForm = document.getElementById('GOL_GRID_FORM');
+    if(isNaN(gridNum)) {
+        gridForm.className = "ui inverted form error";
+        setTimeout(function(){
+            gridForm.className = "ui inverted form";
+        },5000);
+    } else {
+        gridForm.className = "ui inverted form";
+        GOL.setGrid(Number(gridNum));
+    }
+},false);
+
 
 var playBut = document.getElementById('GOL_PLAY');
 playBut.addEventListener('click', function(){
@@ -124,10 +161,12 @@ playBut.addEventListener('click', function(){
     GOL.auto();
 },false);
 
+
 var stopBut = document.getElementById('GOL_STOP');
 stopBut.addEventListener('click', function(){
     GOL.isPlaying = false;
 },false);
+
 
 var resetBut = document.getElementById('GOL_RESET');
 resetBut.addEventListener('click', function(){
