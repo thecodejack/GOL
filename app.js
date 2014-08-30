@@ -4,7 +4,7 @@
     var x = 25, y = 25, //Grid Size
         gen = 0, //generations count
         aliveColor = '#7CFC00', //color set of a cell is alive
-        frameTime = 500; //time for which generation happens in msecs
+        frameTime = 100; //time for which generation happens in msecs
     //other vars available for the game
     var canvas = document.getElementById('GOL_CANVAS'),
         context = canvas.getContext('2d'),
